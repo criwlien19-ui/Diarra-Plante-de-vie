@@ -52,20 +52,39 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Product>>({});
   const [isAdding, setIsAdding] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) { // 2MB limit for localStorage
-        alert("L'image est trop volumineuse (max 2MB pour le stockage local).");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setEditForm({ ...editForm, image: reader.result as string });
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("L'image est trop volumineuse (max 5MB).");
+      return;
+    }
+
+    setIsUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `product-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(fileName);
+
+      setEditForm(prev => ({ ...prev, image: urlData.publicUrl }));
+    } catch (err) {
+      console.error("Erreur upload image:", err);
+      alert("Erreur lors de l'upload de l'image. Vérifiez votre connexion.");
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -378,30 +397,47 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
               <label className="block text-xs uppercase tracking-widest text-zinc-500 mb-2">Image du produit</label>
               <div className="flex gap-4 items-center">
                 <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-white/5 border border-white/10 flex items-center justify-center group flex-shrink-0">
-                  {editForm.image ? (
+                  {isUploadingImage ? (
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="w-6 h-6 border-2 border-lime-400 border-t-transparent rounded-full animate-spin" />
+                      <span className="text-[8px] text-lime-400">Upload...</span>
+                    </div>
+                  ) : editForm.image ? (
                     <img src={editForm.image} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
                     <ImageIcon size={32} className="text-zinc-600" />
                   )}
-                  <button 
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
-                  >
-                    <Upload size={20} />
-                  </button>
+                  {!isUploadingImage && (
+                    <button 
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white"
+                    >
+                      <Upload size={20} />
+                    </button>
+                  )}
                 </div>
                 <div className="flex-1 space-y-2">
                   <button 
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full py-2 bg-white/5 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                    disabled={isUploadingImage}
+                    className={`w-full py-2 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 ${isUploadingImage ? 'bg-lime-500/20 text-lime-400 cursor-wait' : 'bg-white/5 hover:bg-white/10'}`}
                   >
-                    <Upload size={14} /> Choisir une photo locale
+                    {isUploadingImage ? (
+                      <><div className="w-3 h-3 border-2 border-lime-400 border-t-transparent rounded-full animate-spin" /> Envoi en cours...</>
+                    ) : (
+                      <><Upload size={14} /> Choisir une photo locale</>
+                    )}
                   </button>
+                  {editForm.image && !editForm.image.startsWith('data:') && (
+                    <p className="text-[9px] text-lime-400 truncate flex items-center gap-1">
+                      <Check size={10} /> Image uploadée avec succès
+                    </p>
+                  )}
                   <input 
                     type="text" 
-                    value={editForm.image || ''} 
+                    value={editForm.image?.startsWith('data:') ? '' : (editForm.image || '')} 
                     onChange={e => setEditForm({...editForm, image: e.target.value})} 
                     className="w-full bg-white/5 border border-white/10 rounded-lg py-2 px-3 text-[10px] focus:border-lime-500/50 outline-none" 
                     placeholder="Ou collez une URL d'image (https://...)" 
@@ -410,7 +446,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
                     type="file" 
                     ref={fileInputRef} 
                     onChange={handleImageUpload} 
-                    accept="image/*" 
+                    accept="image/jpeg,image/jpg,image/png,image/webp,image/gif" 
                     className="hidden" 
                   />
                 </div>
