@@ -111,7 +111,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
 
   const handleSave = async () => {
     if (editingId) {
-      const { error } = await supabase.from('products').update({
+      const { error } = await supabase.from('products').upsert({
+        id: editingId,
         name: editForm.name,
         scientific_name: editForm.scientificName,
         description: editForm.description,
@@ -124,7 +125,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
         symptoms: editForm.symptoms,
         image: editForm.image,
         stock: editForm.stock,
-      }).eq('id', editingId);
+      });
       
       if (!error) {
         setProducts(products.map(p => p.id === editingId ? { ...p, ...editForm } as Product : p));
