@@ -70,21 +70,18 @@ const App: React.FC = () => {
       try {
         const { data, error } = await supabase.from('products').select('*');
         if (error) throw error;
-        
-        let dbProducts: Product[] = [];
+
         if (data && data.length > 0) {
-          dbProducts = data.map(p => ({
+          // Charger uniquement depuis Supabase pour que les modifications admin soient prises en compte
+          const dbProducts: Product[] = data.map(p => ({
             ...p,
             scientificName: p.scientific_name || p.scientificName || ''
           }));
+          setProducts(dbProducts);
+        } else {
+          // Supabase est vide : utiliser les constantes statiques comme fallback
+          setProducts(PRODUCTS);
         }
-
-        // Merge with static PRODUCTS so we keep the initial catalog + new items
-        const currentProductsMap = new Map();
-        PRODUCTS.forEach(p => currentProductsMap.set(p.id, p));
-        dbProducts.forEach(p => currentProductsMap.set(p.id, p));
-        
-        setProducts(Array.from(currentProductsMap.values()));
       } catch (err) {
         console.error("Erreur Supabase, chargement fallback", err);
         setProducts(PRODUCTS);
