@@ -8,6 +8,7 @@ import ProductModal from './components/ProductModal';
 import AdminPage from './components/AdminPage';
 import { GoogleGenAI, Modality } from "@google/genai";
 import { supabase } from './services/supabase';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import {
   ShoppingBag, ChevronRight, Wind, MapPin, Clock, Phone, Mail, ShoppingCart,
   Check, Trash2, CreditCard, Smartphone, ArrowLeft, Wallet, Plus, Minus,
@@ -1180,6 +1181,7 @@ const App: React.FC = () => {
           © {new Date().getFullYear()} Diarra Plante de Vie — Paris Herboristerie d'Exception
         </div>
       </footer>
+      <SpeedInsights />
     </div>
   );
 };
