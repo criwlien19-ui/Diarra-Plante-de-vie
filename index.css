@@ -1,0 +1,11 @@
+/* ============================================================
+   DIARRA PLANTE DE VIE — Feuille de styles globale
+   TailwindCSS intégré via Vite (remplace le CDN cdn.tailwindcss.com)
+   ============================================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Les styles globaux sont dans index.html <style> pour le chargement initial.
+   Ce fichier est le point d'entrée CSS du build Vite. */

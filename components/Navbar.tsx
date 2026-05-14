@@ -27,7 +27,9 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, setCurrentPage }) => {
             key={item.id}
             onClick={() => {
               if (item.id === 'whatsapp_advice') {
-                window.open('https://wa.me/33782931468?text=Bonjour, je souhaiterais un conseil', '_blank');
+                // Numéro cohérent avec App.tsx — peut être surchargé via VITE_WHATSAPP_NUMBER
+                const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '33749718309';
+                window.open(`https://wa.me/${whatsappNumber}?text=Bonjour, je souhaiterais un conseil`, '_blank');
               } else {
                 setCurrentPage(item.id as Page);
               }

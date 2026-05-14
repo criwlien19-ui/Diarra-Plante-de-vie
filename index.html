@@ -4,11 +4,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diarra Plante de La Vie | Sagesse de la Nature</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- ===== SEO PRIMAIRE ===== -->
+    <title>Diarra Plante de Vie | Herboristerie Africaine à Paris</title>
+    <meta name="description" content="Boutique d'herboristerie africaine traditionnelle à Paris 18e. Racines, plantes médicinales et remèdes ancestraux. Expertise familiale depuis 3 générations. Commander via WhatsApp.">
+    <meta name="keywords" content="plantes médicinales africaines, herboristerie Paris, racines médicinales, pharmacopée africaine, Diarra, plantes traditionnelles, Paris 18e">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Diarra Plante de Vie">
+    <meta name="theme-color" content="#0c120c">
+    <link rel="canonical" href="https://diarra-plante-de-vie.vercel.app/">
+
+    <!-- ===== OPEN GRAPH (réseaux sociaux) ===== -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://diarra-plante-de-vie.vercel.app/">
+    <meta property="og:title" content="Diarra Plante de Vie | Herboristerie Africaine à Paris">
+    <meta property="og:description" content="Racines et plantes médicinales africaines de qualité supérieure. Un savoir ancestral transmis depuis 3 générations. Boutique au 42 Rue Marcadet, Paris 18e.">
+    <meta property="og:image" content="https://i.imgur.com/hBCfOWn.jpeg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="Diarra Plante de Vie">
+
+    <!-- ===== TWITTER CARD ===== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Diarra Plante de Vie | Herboristerie Africaine à Paris">
+    <meta name="twitter:description" content="Racines et plantes médicinales africaines de qualité supérieure. Boutique au 42 Rue Marcadet, Paris 18e.">
+    <meta name="twitter:image" content="https://i.imgur.com/hBCfOWn.jpeg">
+
+    <!-- ===== DONNÉES STRUCTURÉES (Rich Snippets Google) ===== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Diarra Plante de Vie",
+      "description": "Herboristerie africaine traditionnelle spécialisée dans les racines et plantes médicinales.",
+      "url": "https://diarra-plante-de-vie.vercel.app",
+      "telephone": "+33749718309",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "42 Rue Marcadet",
+        "addressLocality": "Paris",
+        "postalCode": "75018",
+        "addressCountry": "FR"
+      },
+      "openingHours": "Mo-Sa 09:30-19:30",
+      "priceRange": "€€",
+      "image": "https://i.imgur.com/hBCfOWn.jpeg"
+    }
+    </script>
+
+    <!-- ===== FONTS (Google Fonts — preconnect pour performance) ===== -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- ===== STYLES GLOBAUX ===== -->
+    <!-- NOTE : TailwindCSS est chargé via le build Vite (tailwindcss devDependency).
+         Ne pas utiliser le CDN cdn.tailwindcss.com en production. -->
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;

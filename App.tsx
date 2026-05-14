@@ -83,7 +83,8 @@ const App: React.FC = () => {
           setProducts(PRODUCTS);
         }
       } catch (err) {
-        console.error("Erreur Supabase, chargement fallback", err);
+        // Fallback silencieux en production — Supabase indisponible, on utilise les données statiques
+        if (import.meta.env.DEV) console.error("Erreur Supabase, chargement fallback", err);
         setProducts(PRODUCTS);
       } finally {
         setIsLoadingProducts(false);
@@ -132,18 +133,14 @@ const App: React.FC = () => {
 
   const [orders, setOrders] = useState<Order[]>([]);
 
-  useEffect(() => {
-    // Si on a besoin de charger les commandes (pour AdminPage ça se fera là-bas)
-    // Ici on vide le localstorage et on utilisera la db si besoin
-  }, []);
-
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>('cart');
   const [deliveryMethod, setDeliveryMethod] = useState<'pickup' | 'shipping'>('pickup');
   const [shippingAddress, setShippingAddress] = useState({ street: '', city: '', zip: '' });
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'wave' | 'orange' | null>(null);
-  const WHATSAPP_NUMBER = "33749718309";
-  const CONTACT_EMAIL = "Senpixelstudio@gmail.com";
+  // Centralisé dans les variables d'env pour modification sans toucher au code
+  const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER || "33749718309";
+  const CONTACT_EMAIL = import.meta.env.VITE_CONTACT_EMAIL || "Senpixelstudio@gmail.com";
   const [lastAddedId, setLastAddedId] = useState<string | null>(null);
   const checkoutPromptTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showCheckoutPrompt, setShowCheckoutPrompt] = useState(false);
@@ -193,11 +190,13 @@ const App: React.FC = () => {
           sessionStorage.setItem('diarra_greeted', 'true');
         }
       } catch (err: any) {
-        // Handle Quota exceeded or other API errors silently for the user
-        if (err?.message?.includes('quota') || err?.status === 429) {
-          console.warn("L'accueil vocal est indisponible pour le moment (quota atteint).");
-        } else {
-          console.error("Erreur TTS:", err);
+        // Gestion silencieuse en production — quota ou erreur API non-critique
+        if (import.meta.env.DEV) {
+          if (err?.message?.includes('quota') || err?.status === 429) {
+            console.warn("L'accueil vocal est indisponible pour le moment (quota atteint).");
+          } else {
+            console.error("Erreur TTS:", err);
+          }
         }
       }
     }, 1000);
@@ -332,11 +331,7 @@ const App: React.FC = () => {
     setSelectedPaymentMethod(null);
   };
 
-  const handleConfirmOrder = async () => {
-    // N'est plus utilisé en principe (remplacé par handleWhatsAppCheckout)
-    setCart([]);
-    setCheckoutStep('success');
-  };
+  // handleConfirmOrder supprimé — remplacé par handleWhatsAppCheckout
 
   const itemsTotal = cart.reduce((acc, item) => {
     const product = products.find(p => p.id === item.id);
@@ -411,7 +406,8 @@ const App: React.FC = () => {
       const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
       if (itemsError) throw itemsError;
     } catch (err) {
-      console.error("Erreur lors de l'enregistrement de la commande", err);
+      // Erreur non-bloquante : la commande WhatsApp continue même si Supabase échoue
+      if (import.meta.env.DEV) console.error("Erreur lors de l'enregistrement de la commande", err);
     }
 
     const itemsList = cart.map(item => {

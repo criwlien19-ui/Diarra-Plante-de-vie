@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Bloquer l'accès à l'espace admin aux crawlers
+Disallow: /admin
+
+Sitemap: https://diarra-plante-de-vie.vercel.app/sitemap.xml

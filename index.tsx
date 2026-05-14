@@ -1,6 +1,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import './index.css'; // TailwindCSS — remplace le CDN cdn.tailwindcss.com
 import App from './App';
 
 const rootElement = document.getElementById('root');

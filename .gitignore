@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Variables d'environnement (ne jamais commiter les vraies clés)
+.env
+.env.local
+.env.production
+# .env.example est volontairement commité (pas de secrets, juste la structure)
+
+# Dossiers temporaires
+tmp_deploy/
+tmp/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

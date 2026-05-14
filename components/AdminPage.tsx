@@ -45,7 +45,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
         setOrders(orders.map(o => o.id === orderId ? { ...o, status } : o));
       }
     } catch(err) {
-      console.error(err);
+      if (import.meta.env.DEV) console.error(err);
     }
   };
 
@@ -81,7 +81,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
 
       setEditForm(prev => ({ ...prev, image: urlData.publicUrl }));
     } catch (err) {
-      console.error("Erreur upload image:", err);
+      if (import.meta.env.DEV) console.error("Erreur upload image:", err);
       alert("Erreur lors de l'upload de l'image. Vérifiez votre connexion.");
     } finally {
       setIsUploadingImage(false);
@@ -90,7 +90,16 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'Admin' && password === '@Senpixel0905') {
+    // SÉCURITÉ : Les credentials sont lus depuis les variables d'environnement.
+    // Configurez VITE_ADMIN_USERNAME et VITE_ADMIN_PASSWORD dans Vercel Dashboard.
+    const adminUsername = import.meta.env.VITE_ADMIN_USERNAME || 'Admin';
+    const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+    if (!adminPassword) {
+      console.error('⚠️ VITE_ADMIN_PASSWORD non configuré. Accès admin désactivé.');
+      setLoginError(true);
+      return;
+    }
+    if (username === adminUsername && password === adminPassword) {
       setIsAuthenticated(true);
       sessionStorage.setItem('diarra_admin_auth', 'true');
       setLoginError(false);
@@ -130,7 +139,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
       if (!error) {
         setProducts(products.map(p => p.id === editingId ? { ...p, ...editForm } as Product : p));
       } else {
-        console.error("Erreur de modification du produit", error);
+        if (import.meta.env.DEV) console.error("Erreur de modification du produit", error);
       }
     } else {
       const newProduct = {
@@ -153,7 +162,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
       if (!error) {
         setProducts([...products, { ...newProduct, scientificName: newProduct.scientific_name } as Product]);
       } else {
-        console.error("Erreur d'ajout du produit", error);
+        if (import.meta.env.DEV) console.error("Erreur d'ajout du produit", error);
       }
     }
     setEditingId(null);
@@ -167,7 +176,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
       if (!error) {
         setProducts(products.filter(p => p.id !== id));
       } else {
-        console.error("Erreur de suppression du produit", error);
+        if (import.meta.env.DEV) console.error("Erreur de suppression du produit", error);
       }
     }
   };
