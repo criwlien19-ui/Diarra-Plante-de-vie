@@ -1,13 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
 
-// SÉCURITÉ : Les clés doivent être définies dans les variables d'environnement.
-// Ne jamais hardcoder de clés API en fallback dans le code source.
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  // En dev, afficher un message clair. En prod, l'app ne peut pas fonctionner sans ces clés.
-  console.error('⚠️ Variables d\'environnement Supabase manquantes (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY). Vérifiez votre fichier .env.local ou les variables Vercel.');
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// SÉCURITÉ & STABILITÉ : On ne crée le client que si les variables sont présentes.
+// Si elles manquent, on exporte un proxy ou un objet qui ne fait rien pour éviter le crash au chargement.
+export const supabase = (supabaseUrl && supabaseAnonKey) 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : new Proxy({} as any, {
+      get: () => {
+        console.error('⚠️ Supabase utilisé sans variables d\'environnement (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).');
+        return () => Promise.resolve({ data: null, error: new Error('Supabase not initialized') });
+      }
+    });
