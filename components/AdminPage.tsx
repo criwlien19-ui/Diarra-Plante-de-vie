@@ -91,15 +91,17 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // SÉCURITÉ : Les credentials sont lus depuis les variables d'environnement.
-    // Configurez VITE_ADMIN_USERNAME et VITE_ADMIN_PASSWORD dans Vercel Dashboard.
-    const adminUsername = import.meta.env.VITE_ADMIN_USERNAME || 'Admin';
+    const adminUsername = (import.meta.env.VITE_ADMIN_USERNAME || 'Admin').toLowerCase();
     const adminPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+
     if (!adminPassword) {
-      console.error('⚠️ VITE_ADMIN_PASSWORD non configuré. Accès admin désactivé.');
+      alert("⚠️ Erreur de configuration : VITE_ADMIN_PASSWORD n'est pas défini dans les variables d'environnement.");
       setLoginError(true);
       return;
     }
-    if (username === adminUsername && password === adminPassword) {
+
+    // Comparaison insensible à la casse pour l'identifiant
+    if (username.toLowerCase() === adminUsername && password === adminPassword) {
       setIsAuthenticated(true);
       sessionStorage.setItem('diarra_admin_auth', 'true');
       setLoginError(false);
