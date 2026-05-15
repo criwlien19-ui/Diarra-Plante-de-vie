@@ -150,6 +150,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
               src={product.image}
               alt={product.name}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=800&auto=format&fit=crop';
+              }}
             />
           </div>
 

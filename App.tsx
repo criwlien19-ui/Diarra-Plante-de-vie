@@ -651,7 +651,17 @@ const App: React.FC = () => {
               className="group liquid-glass rounded-[2rem] overflow-hidden flex flex-col hover:border-lime-500/40 hover:shadow-[0_0_25px_rgba(132,204,22,0.2)] transition-all"
             >
               <div className="h-80 overflow-hidden relative cursor-pointer" onClick={() => setSelectedProduct(product)}>
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                <img 
+                  src={product.image} 
+                  alt={product.name} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    if (!target.src.includes('images.unsplash.com')) {
+                      target.src = 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=800&auto=format&fit=crop';
+                    }
+                  }}
+                />
                 <div className="absolute top-6 left-6 px-4 py-1.5 liquid-glass rounded-full text-[10px] font-bold uppercase tracking-widest text-lime-400">
                   {product.category}
                 </div>
@@ -855,7 +865,17 @@ const App: React.FC = () => {
                       if (!product) return null;
                       return (
                         <M.div layout key={item.id} className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                          <img src={product.image} alt={product.name} className="w-20 h-20 object-cover rounded-xl" />
+                          <div className="w-20 h-20 rounded-xl overflow-hidden">
+                            <img 
+                              src={product.image.includes('supabase') ? product.image : product.image} 
+                              alt={product.name} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = 'https://images.unsplash.com/photo-1515694346937-94d85e41e6f0?q=80&w=800&auto=format&fit=crop';
+                              }}
+                            />
+                          </div>
                           <div className="flex-1">
                             <h4 className="font-bold text-sm">{product.name}</h4>
                             <p className="text-xs text-zinc-400 mb-2">{product.price}</p>
