@@ -79,10 +79,15 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
         .from('product-images')
         .getPublicUrl(fileName);
 
+      if (!urlData || !urlData.publicUrl) {
+        throw new Error("Impossible de récupérer l'URL publique de l'image.");
+      }
+
       setEditForm(prev => ({ ...prev, image: urlData.publicUrl }));
-    } catch (err) {
-      if (import.meta.env.DEV) console.error("Erreur upload image:", err);
-      alert("Erreur lors de l'upload de l'image. Vérifiez votre connexion.");
+      alert("✅ Image téléchargée avec succès !");
+    } catch (err: any) {
+      console.error("Erreur détaillée upload image:", err);
+      alert(`❌ Erreur d'upload : ${err.message || "Problème de connexion ou permissions Supabase"}`);
     } finally {
       setIsUploadingImage(false);
     }
@@ -175,11 +180,13 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
   const handleDelete = async (id: string) => {
     if (window.confirm('Voulez-vous vraiment supprimer ce produit ?')) {
       const { error } = await supabase.from('products').delete().eq('id', id);
+      
       if (!error) {
         setProducts(products.filter(p => p.id !== id));
+        alert("✅ Produit supprimé définitivement.");
       } else {
-        alert("Erreur lors de la suppression : " + error.message);
-        if (import.meta.env.DEV) console.error("Erreur de suppression du produit", error);
+        console.error("Erreur détaillée suppression:", error);
+        alert(`❌ Erreur de suppression : ${error.message} (Code: ${error.code})`);
       }
     }
   };
