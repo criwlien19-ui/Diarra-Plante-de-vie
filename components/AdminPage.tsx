@@ -178,6 +178,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ products, setProducts }) => {
       if (!error) {
         setProducts(products.filter(p => p.id !== id));
       } else {
+        alert("Erreur lors de la suppression : " + error.message);
         if (import.meta.env.DEV) console.error("Erreur de suppression du produit", error);
       }
     }
